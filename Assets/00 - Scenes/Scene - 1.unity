@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43667546, g: 0.48427135, b: 0.5645225, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -695,8 +695,17 @@ GameObject:
   - component: {fileID: 374040428}
   - component: {fileID: 374040427}
   - component: {fileID: 374040430}
+  - component: {fileID: 374040449}
   - component: {fileID: 374040431}
+  - component: {fileID: 374040446}
+  - component: {fileID: 374040447}
+  - component: {fileID: 374040448}
   - component: {fileID: 374040435}
+  - component: {fileID: 374040442}
+  - component: {fileID: 374040441}
+  - component: {fileID: 374040443}
+  - component: {fileID: 374040444}
+  - component: {fileID: 374040445}
   - component: {fileID: 374040440}
   m_Layer: 0
   m_Name: Terrain
@@ -779,7 +788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: {fileID: 1822113349}
   brush_radius: 10
-  object_prefab: {fileID: 100000, guid: 6aab193b7693b5e4c9741f1917d2987c, type: 3}
+  object_prefab: {fileID: 100016, guid: 469edab27ab6d004d84af2c4a851bd7f, type: 3}
   min_scale: 0.8
   max_scale: 1.2
   cam: {fileID: 0}
@@ -824,6 +833,129 @@ MonoBehaviour:
   animalPrefab: {fileID: 223894165}
   vegetationGrowthRate: 1
   currentGrowth: 0
+--- !u!114 &374040441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8219f8d046dcfc4babba8ed7be9adda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magnitude: 3
+--- !u!114 &374040442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea0ca73630794c4584a7a943075215c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  height: 0.5
+--- !u!114 &374040443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85393d999361c4e4c974da0dcf035842, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  height: 5
+--- !u!114 &374040444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e5647a1b24390e4488ea6d41e65f122, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magnitude: 3
+--- !u!114 &374040445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e0c3a57529e9d4db130c484ca50fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magnitude: 0.5
+--- !u!114 &374040446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a58db9ed4bd638545beeabf568c9ce4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &374040447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c24bad9c31d3de46b8077bde303b1c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &374040448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbafcd9cab7ba1a4ebe7a354d446c25d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  angle: 0
+  nbRows: 4
+  nbCols: 4
+--- !u!114 &374040449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374040426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b391ae6e0e176f40a927d6faf5cf5bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PalmTree: {fileID: 0}
+  Broadleaf: {fileID: 0}
+  Conifer: {fileID: 0}
+  superMinimalProjectedDistance: 100
+  superMaximalSteepness: 50
+  superUpperAltitude: 100
+  superLowerAltitude: 30
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -2131,7 +2263,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2137751596}
-  m_LocalRotation: {x: 0.09467273, y: 0.4793379, z: -0.05210416, w: 0.870952}
+  m_LocalRotation: {x: 0.09467271, y: 0.4793379, z: -0.052104153, w: 0.870952}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
