@@ -4,7 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Animal : MonoBehaviour
+
+public enum AnimalTypes
+{
+    Prey,
+    Predator
+}
+
+public abstract class Animal : MonoBehaviour
 {
 
     [Header("Animal parameters")]
@@ -16,35 +23,36 @@ public class Animal : MonoBehaviour
 
     [Header("Energy parameters")]
     public float maxEnergy = 10.0f;
-    public float lossEnergy = 0.1f;
+    public float lossEnergy = 0.2f;
     public float gainEnergy = 10.0f;
-    private float energy;
+    protected float energy;
 
     [Header("Sensor - Vision")]
-    public float maxVision = 20.0f;
-    public float stepAngle = 10.0f;
-    public int nEyes = 5;
+    public float maxVision = 25.0f;
+    public float stepAngle = 6.0f;
+    public int nEyes = 8;
 
-    private int[] networkStruct;
-    private SimpleNeuralNet brain = null;
+    protected int[] networkStruct;
+    protected SimpleNeuralNet brain = null;
 
     // Terrain.
-    private CustomTerrain terrain = null;
-    private int[,] details = null;
-    private Vector2 detailSize;
-    private Vector2 terrainSize;
+    protected CustomTerrain terrain = null;
+    protected int[,] details = null;
+    protected Vector2 detailSize;
+    protected Vector2 terrainSize;
 
     // Animal.
-    private Transform tfm;
-    private float[] vision;
+    protected Transform tfm;
+    protected float[] vision;
+    public Color animalColour;
 
     // Genetic alg.
-    private GeneticAlgo genetic_algo = null;
+    protected GeneticAlgo genetic_algo = null;
 
     // Renderer.
-    private Material mat = null;
+    protected Material mat = null;
 
-    void Start()
+    protected virtual void Start()
     {
         // Network: 1 input per receptor, 1 output per actuator.
         vision = new float[nEyes];
@@ -72,18 +80,12 @@ public class Animal : MonoBehaviour
             return;
         }
 
-        // Retrieve animal location in the heighmap
-        int dx = (int)((tfm.position.x / terrainSize.x) * detailSize.x);
-        int dy = (int)((tfm.position.z / terrainSize.y) * detailSize.y);
-
         // For each frame, we lose lossEnergy
         energy -= lossEnergy;
 
-        // If the animal is located in the dimensions of the terrain and over a grass position (details[dy, dx] > 0), it eats it, gain energy and spawn an offspring.
-        if ((dx >= 0) && dx < (details.GetLength(1)) && (dy >= 0) && (dy < details.GetLength(0)) && details[dy, dx] > 0)
+        // If the animal manages to eat, it gains energy and spawns an offspring.
+        if (TryEating())
         {
-            // Eat (remove) the grass and gain energy.
-            details[dy, dx] = 0;
             energy += gainEnergy;
             if (energy > maxEnergy)
                 energy = maxEnergy;
@@ -100,7 +102,7 @@ public class Animal : MonoBehaviour
 
         // Update the color of the animal as a function of the energy that it contains.
         if (mat != null)
-            mat.color = Color.white * (energy / maxEnergy);
+            mat.color = animalColour * (energy / maxEnergy);
 
         // 1. Update receptor.
         UpdateVision();
@@ -116,52 +118,21 @@ public class Animal : MonoBehaviour
     /// <summary>
     /// Calculate distance to the nearest food resource, if there is any.
     /// </summary>
-    private void UpdateVision()
-    {
-        float startingAngle = -((float)nEyes / 2.0f) * stepAngle;
-        Vector2 ratio = detailSize / terrainSize;
+    protected abstract void UpdateVision();
 
-        for (int i = 0; i < nEyes; i++)
-        {
-            Quaternion rotAnimal = tfm.rotation * Quaternion.Euler(0.0f, startingAngle + (stepAngle * i), 0.0f);
-            Vector3 forwardAnimal = rotAnimal * Vector3.forward;
-            float sx = tfm.position.x * ratio.x;
-            float sy = tfm.position.z * ratio.y;
-            vision[i] = 1.0f;
+    /// <summary>
+    /// Returns true if the animal can currently eat
+    /// </summary>
+    protected abstract bool TryEating();
 
-            // Interate over vision length.
-            for (float distance = 1.0f; distance < maxVision; distance += 0.5f)
-            {
-                // Position where we are looking at.
-                float px = (sx + (distance * forwardAnimal.x * ratio.x));
-                float py = (sy + (distance * forwardAnimal.z * ratio.y));
-
-                if (px < 0)
-                    px += detailSize.x;
-                else if (px >= detailSize.x)
-                    px -= detailSize.x;
-                if (py < 0)
-                    py += detailSize.y;
-                else if (py >= detailSize.y)
-                    py -= detailSize.y;
-
-                if ((int)px >= 0 && (int)px < details.GetLength(1) && (int)py >= 0 && (int)py < details.GetLength(0) && details[(int)py, (int)px] > 0)
-                {
-                    vision[i] = distance / maxVision;
-                    break;
-                }
-            }
-        }
-    }
-
-    public void Setup(CustomTerrain ct, GeneticAlgo ga)
+    public virtual void Setup(CustomTerrain ct, GeneticAlgo ga)
     {
         terrain = ct;
         genetic_algo = ga;
         UpdateSetup();
     }
 
-    private void UpdateSetup()
+    protected void UpdateSetup()
     {
         detailSize = terrain.detailSize();
         Vector3 gsz = terrain.terrainSize();

@@ -8,47 +8,75 @@ public class GeneticAlgo : MonoBehaviour
 {
 
     [Header("Genetic Algorithm parameters")]
-    public int popSize = 100;
-    public GameObject animalPrefab;
+    public int preyPopSize = 100;
+    public int predatorPopSize = 100;
+    public GameObject preyPrefab;
+    public GameObject predatorPrefab;
 
     [Header("Dynamic elements")]
     public float vegetationGrowthRate = 1.0f;
     public float currentGrowth;
 
-    private List<GameObject> animals;
+    private List<GameObject> preys;
+    private List<GameObject> predators;
     protected Terrain terrain;
     protected CustomTerrain customTerrain;
     protected float width;
     protected float height;
+    public Prey[,] preysMap = null;
+    public int preysMapLength = 400;
 
-    void Start()
+    protected void Start()
     {
         // Retrieve terrain.
         terrain = Terrain.activeTerrain;
         customTerrain = GetComponent<CustomTerrain>();
         width = terrain.terrainData.size.x;
         height = terrain.terrainData.size.z;
+        preysMap = new Prey[preysMapLength, preysMapLength];
 
         // Initialize terrain growth.
         currentGrowth = 0.0f;
 
-        // Initialize animals array.
-        animals = new List<GameObject>();
-        for (int i = 0; i < popSize; i++)
+        // Initialize animals and predator arrays.
+        preys = new List<GameObject>();
+        predators = new List<GameObject>();
+        for (int i = 0; i < preyPopSize; i++)
         {
-            GameObject animal = makeAnimal();
-            animals.Add(animal);
+            GameObject prey = makeAnimal(AnimalTypes.Prey);
+            preys.Add(prey);
+        }
+        for (int i = 0; i < predatorPopSize; i++)
+        {
+            GameObject predator = makeAnimal(AnimalTypes.Predator);
+            predators.Add(predator);
         }
     }
 
     void Update()
     {
-        // Keeps animal to a minimum.
-        while (animals.Count < popSize / 2)
+        // Keeps preys to a minimum.
+        while (preys.Count < preyPopSize / 2)
         {
-            animals.Add(makeAnimal());
+            preys.Add(makeAnimal(AnimalTypes.Prey));
         }
-        customTerrain.debug.text = "N° animals: " + animals.Count.ToString();
+        // Keeps predators to a minimum.
+        while (predators.Count < predatorPopSize / 2)
+        {
+            predators.Add(makeAnimal(AnimalTypes.Predator));
+        }
+        customTerrain.debug.text = "Nï¿½ preys: " + preys.Count.ToString() + "\nNï¿½ predators: " + predators.Count.ToString();
+
+        // Registers preys positions
+        Array.Clear(preysMap, 0, preysMap.Length);
+        foreach (GameObject prey in preys)
+        {
+            // Retrieve prey location in the heighmap
+            int dx = (int)((prey.transform.position.x / width) * preysMapLength);
+            int dy = (int)((prey.transform.position.z / height) * preysMapLength);
+
+            preysMap[dy, dx] = prey.GetComponent<Prey>();
+        }
 
         // Update grass elements/food resources.
         updateResources();
@@ -77,9 +105,15 @@ public class GeneticAlgo : MonoBehaviour
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
-    public GameObject makeAnimal(Vector3 position)
+    public GameObject makeAnimal(AnimalTypes type, Vector3 position)
     {
-        GameObject animal = Instantiate(animalPrefab, transform);
+        GameObject animal;
+
+        if (type == AnimalTypes.Predator)
+            animal = Instantiate(predatorPrefab, transform);
+        else
+            animal = Instantiate(preyPrefab, transform);
+
         animal.GetComponent<Animal>().Setup(customTerrain, this);
         animal.transform.position = position;
         animal.transform.Rotate(0.0f, UnityEngine.Random.value * 360.0f, 0.0f);
@@ -90,24 +124,33 @@ public class GeneticAlgo : MonoBehaviour
     /// If makeAnimal() is called without position, we randomize it on the terrain.
     /// </summary>
     /// <returns></returns>
-    public GameObject makeAnimal()
+    public GameObject makeAnimal(AnimalTypes type)
     {
         Vector3 scale = terrain.terrainData.heightmapScale;
         float x = UnityEngine.Random.value * width;
         float z = UnityEngine.Random.value * height;
         float y = customTerrain.getInterp(x / scale.x, z / scale.z);
-        return makeAnimal(new Vector3(x, y, z));
+        return makeAnimal(type, new Vector3(x, y, z));
     }
 
     /// <summary>
-    /// Method to add an animal inherited from anothed. It spawns where the parent was.
+    /// Method to add an animal inherited from another. It spawns where the parent was.
     /// </summary>
     /// <param name="parent"></param>
     public void addOffspring(Animal parent)
     {
-        GameObject animal = makeAnimal(parent.transform.position);
-        animal.GetComponent<Animal>().InheritBrain(parent.GetBrain(), true);
-        animals.Add(animal);
+        if (parent is Prey)
+        {
+            GameObject prey = makeAnimal(AnimalTypes.Prey, parent.transform.position);
+            prey.GetComponent<Prey>().InheritBrain(parent.GetBrain(), true);
+            preys.Add(prey);
+        }
+        if (parent is Predator)
+        {
+            GameObject predator = makeAnimal(AnimalTypes.Predator, parent.transform.position);
+            predator.GetComponent<Predator>().InheritBrain(parent.GetBrain(), true);
+            predators.Add(predator);
+        }
     }
 
     /// <summary>
@@ -116,7 +159,11 @@ public class GeneticAlgo : MonoBehaviour
     /// <param name="animal"></param>
     public void removeAnimal(Animal animal)
     {
-        animals.Remove(animal.transform.gameObject);
+        if (animal is Prey)
+            preys.Remove(animal.transform.gameObject);
+        if (animal is Predator)
+            predators.Remove(animal.transform.gameObject);
+
         Destroy(animal.transform.gameObject);
     }
 
